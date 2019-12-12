@@ -12,13 +12,18 @@ def train_epoch(train_dataloader,model,crit,optimizer):
         
         img1 = data[0].cuda()
         img2 = data[1].cuda()
-        label = data[2].cuda()
+        temp = data[2].cuda()
             
         optimizer.zero_grad()
             
         output1 = model(img1)
         output2 = model(img2)
-        loss = crit(output1,output2,label)
+        
+        if data[2].dim()==4:
+            output3 = model(temp)
+            loss = crit(output1,output2,output3)
+        else:
+            loss = crit(output1,output2,temp)
         
         total_loss += loss.item()
                 
@@ -32,6 +37,8 @@ def train_epoch(train_dataloader,model,crit,optimizer):
 
 def validate_epoch(test_dataloader,model,crit):
     
+    model.eval()
+    
     with torch.no_grad():
         model.eval()
         val_loss = 0
@@ -40,11 +47,16 @@ def validate_epoch(test_dataloader,model,crit):
             if(len(data)==3):
                 img1 = data[0].cuda()
                 img2 = data[1].cuda()
-                label = data[2].cuda()
+                temp = data[2].cuda()
 
-            output1 = model(img1)
-            output2 = model(img2)
-            loss = crit(output1,output2,label)
+                output1 = model(img1)
+                output2 = model(img2)
+                
+                if data[2].dim()==4:
+                    output3 = model(temp)
+                    loss = crit(output1,output2,output3)
+                else:
+                    loss = crit(output1,output2,temp)
 
             val_loss += loss.item()
 

@@ -12,7 +12,8 @@ This repository contains pytorch implementation of One-Shot learning for face re
 - [`backbone/trainer.py`](trainer.py) : A helper function that support the train script
 - [`pretrained`](pretrained) : Contains a pretrained model (Inception-Resnet-V1) trained on VGGFace dataset using Facenet (Inception-Resnet-V1 with triplet loss)
 - [`backbone`](backbone) : folder containing the helper functions for one-shot learning pipeline
-- [`Notebooks`](Notebooks) : Contains dataloader, inference and experiment analysis modules as jupyter notebooks. 
+- [`Notebooks`](Notebooks) : Contains dataloader, inference and experiment analysis modules as jupyter notebooks when 50 % couple of similar and 50 % of dissimilar images as data is fed into the model to learn the embeddings with Contrastive loss
+- [`Notebooks_triplet`](Notebooks_triplet) : Contains dataloader, inference and experiment analysis modules as jupyter notebooks when a triplet is constructed (A,P,N) and fed into the model to learn the last layer embeddings with Triplet Loss
 - [`files`](files) : contains train and validation data text files containing list of randomly generated positive and negative pairs
 
 ## Usage
@@ -65,7 +66,7 @@ Here, a **Inception-Resnet-v1** has been chosen to represent siamese network. It
 
 - **Scheduler** : Reduce LR on plateu used here with initial LR of 0.01 (original facenet paper used 0.05 as initial LR)
 
-- **Loss Function** :  Here **Contrastive loss function** is used - a distance based loss function to ensure that semantically similar images are embedded closer in the feature space
+- **Loss Function** :  Here **Contrastive loss function** is used - a distance based loss function to ensure that semantically similar images are embedded closer in the feature space. Also, triplet loss is also implemented
 
 
 - **Transfer Learning** : A pretrained model trained on VGGFace is used here. Embeddings already learned on VGG FaceNet support the current training on LFW face dataset. The pre-trained model is imported from [this](https://github.com/timesler/facenet-pytorch) github repository and can be downloaded from [here](https://drive.google.com/uc?export=download&id=12DYdlLesBl3Kk51EtJsyPS8qA7fErWDX)
@@ -75,7 +76,13 @@ Here, a **Inception-Resnet-v1** has been chosen to represent siamese network. It
 | exp_name  | arch_name | pretrained_on | loss_name       | lr_scheduler_name | optimizer_name | F1 Score | Accuracy |  
 |-----------|-----------|---------------|-----------------|-------------------|----------------|-----------|------------|
 | exp1 | inception_resnet_v1 | Imagenet      | Triplet loss     |  reduce lr              | sgd            |  0.9953   | 0.99    | 
-| exp2 | inception_resnet_v1 | VGGFace2      | Contrastive loss |  reduce lr              | adam           |  0.6277   | 0.53 | 
+| exp2 | inception_resnet_v1 | VGGFace2      | Contrastive loss |  reduce lr              | adam           |  0.6277   | 0.53 |
+| exp2 | inception_resnet_v1 | VGGFace2      | Triplet_loss |  reduce lr              | adam           |  0.7592   | 0.83 |
+
+Exp1 : Inception_resnet_v1 trained on VGGFace2 is downloaded and evaluated on LFW dataset <br />
+Exp2 : Inception_resnet_v1 pre-trained on VGGFace2 is downloaded and the last layer embeddings are transfer learned with the support Contrastive loss <br />
+Exp3: Inception_resnet_v1 pre-trained on VGGFace2 is downloaded and the last layer embeddings are transfer learned with the support Triplet Loss <br />
+
 
 
 **Metric Chosen** : 
@@ -95,4 +102,10 @@ F1 Score at 0.6 threshold has been chosen as the metric for evaluation. F1 score
 
 <p align="center">
     <img src="experiments/exp2.png" width="750" />
+</p>
+
+##### ***Exp3***
+
+<p align="center">
+    <img src="experiments/exp3.png" width="750" />
 </p>
